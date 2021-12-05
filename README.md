@@ -13,6 +13,8 @@ To start server.
 ```bash
 npm start
 ```
+## Connect
+Browse the app at http://localhost:2003/
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
