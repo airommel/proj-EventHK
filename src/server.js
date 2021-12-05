@@ -8,7 +8,7 @@ app.use(bodyParser.urlencoded({
 }))
 
 var mongoose = require('mongoose');
-mongoose.connect('mongodb+srv://airommel:yla9703@cluster0.vselm.mongodb.net/myFirstDatabase?retryWrites=true&w=majority');
+mongoose.connect('mongodb+srv://airommel:demo-use-only@cluster0.vselm.mongodb.net/myFirstDatabase?retryWrites=true&w=majority');
 
 
 //listen to port x
