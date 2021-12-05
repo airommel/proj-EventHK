@@ -1,0 +1,156 @@
+<!--Login form-->
+<div class="p-4" id="main">
+    <form id="input">
+        <div class="form-group">
+            <label for="name">Username:</label><br>
+            <div class="form-row">
+                <div class="col-4">
+                    <input class="form-control" type="text" id="username" name="username"><br>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="subject">Password:</label><br>
+            <div class="form-row">
+                <div class="col-4">
+                    <input class="form-control" type="password" id="pw" name="password"><br>
+                </div>
+            </div>
+        </div>
+        <br>
+        <button type="button" id="new" onclick="verify()">Submit</button>
+    </form>
+</div>
+
+
+<script>
+
+    var savedResponse;
+                                                                                                               
+
+    function verify() {
+        var username1 = document.getElementById("username").value;
+        var password1 = document.getElementById("pw").value;
+        if (username1 == '' || password1 == '')
+            alert("You cannot leave any of the fields empty");
+        else {
+
+            $.ajax({
+                url: "/operation/login",
+                type: "POST",
+                dataType: "text",
+                data: {
+                    username: username1,
+                    password: password1
+                },
+
+                success: function(response) {
+
+                    var parsed_data = JSON.parse(response);
+
+
+                    if (!parsed_data.success) {
+                        return alert(parsed_data.message);
+                    } else {
+                        console.log('user id is' + parsed_data.credential);
+                        sessionStorage.setItem("userID", parsed_data.credential);
+                        changePage('home');
+                        //note: added a few lines and log_out() function
+                        name = parsed_data.username1;
+                        var msg = "Welcome, " + parsed_data.username1;
+                        alert(msg);
+                        document.getElementById("log_user").innerHTML = msg;
+                        //document.getElementById("login_btn").innerHTML = "Log out";
+                        //document.getElementById("login_btn").setAttribute("onclick",log_out());
+                        document.getElementById("login_btn").style.display = "none";
+                        document.getElementById("logout_btn").style.display = "";                    
+                    }
+
+                },
+                error: function(error) {
+                    console.log('the operation was not loaded', error);
+                },
+                complete: function(xhr, status) {
+                    console.log("the request is completed");
+                }
+            });
+
+
+        }
+    }
+
+    // function getEvent() {
+    //     $.ajax({
+    //         url: "/operation/getEvent",
+    //         type: "GET",
+
+    //         success: function(response) {
+
+    //             //var parsed_data = JSON.parse(response);
+    //             var parsed_data = response;
+    //             savedResponse = parsed_data.event;
+
+    //             if (!parsed_data.success) {
+    //                 return console.log(parsed_data.message);
+    //             } else {
+
+    //                 //console.log(parsed_data.event);
+
+    //                 //parsed_data = JSON.parse(response)
+
+    //                 savedResponse.map((e, index) => {
+    //                     //id is a number
+    //                     //alert(typeof(e.event_id));
+    //                     var $temp = $('<tr id="' + e.eventID + '">\
+    //                         <td scope="row" class="p-3">' + e.eventSummary + '</td>\
+    //                         <td class="p-3">' + e.eventLocation + '</td>\
+    //                         <td class="p-3 ">' + e.eventOrganizer + '</td>\
+    //                         <td class="p-4"><button></button></td>\
+    //                         <td class="p-3"><input type="button" value="Delete"></td>\
+    //                         ');
+
+    //                     //$temp.find("td:first").click(function() {
+    //                     //    getEachEvent(savedResponse[e.eventID]);
+    //                     //});
+
+    //                     //if (fav.indexOf(index) == -1) {
+    //                     //$temp.find("button").html("Add to Favourites");
+    //                     //} else {
+    //                     //$temp.find("button").html("Undo Favourites");
+    //                     //}
+                        
+
+    //                     $temp.find("td:first").on("click", function(){
+    //                         var $k = $(this).parent("tr").attr("id");
+    //                         //detect click for each event summary
+    //                         //alert($k);
+    //                     });
+    //                     $temp.find("button").attr("id", index);
+    //                     $temp.find("button").addClass("like");
+
+    //                     $("#evts").append($temp);
+    //                 });
+    //             }
+    //         },
+    //         error: function(error) {
+    //             console.log('the operation was not loaded', error);
+    //         },
+    //         complete: function(xhr, status) {
+    //             console.log("the request is completed");
+    //         }
+    //     });
+
+
+    // }
+
+
+    function log_out() {
+        //note: need to save data of user before log out
+        changePage("login");
+        sessionStorage.removeItem("userID");
+        console.log("log out!");
+        document.getElementById("log_user").innerHTML = "";
+        document.getElementById("login_btn").style.display = "";
+        document.getElementById("logout_btn").style.display = "none";
+    }
+</script>

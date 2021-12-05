@@ -1,0 +1,407 @@
+
+<div class="container" style="padding-top: 1rem;">
+    <div class="media">
+      <div class="dropdown mx-3">
+        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Search Criteria<span class="caret"></span></button>
+        <ul class="dropdown-menu">
+          <li id="event" onclick="search('Event')"><a>Event</a></li>
+          <li id="loc" onclick="search('Location')"><a>Location</a></li>
+          <li id="org" onclick="search('Organizer')"><a>Organizer</a></li>
+          <!--<li><a href="#">Number of Favorites</a></li>-->
+        </ul>
+      </div>
+
+      <div class="media-body" >
+        <form class="form-inline my-2 my-lg-0">
+          <!--Criteria Display-->
+          <input class="form-control mr-sm-2 mx-2" type="text" id="show" value="Event" disabled>
+          <!--Search Bar-->
+          <input class="form-control mr-sm-2" id="input" type="search" placeholder="Search" aria-label="Search" onkeyup="menu()">
+          
+          <!--Execute Searc(function duplicated)-->
+          <!--
+          <button type="button" class="btn btn-info" onclick="menu()">
+            <span class="glyphicon glyphicon-search"></span> Search
+          </button>-->
+          <button type="button" class="btn btn-primary mx-2" onclick="show_form()">
+            <span class="glyphicon glyphicon-search"></span> Add Event
+          </button>
+        </form>
+      </div>
+      
+      <!--
+      <div class="dropdown-menu media-body" aria-labelledby="navbarDropdown">
+        <a class="dropdown-item" href="#">Event ID</a>
+        <a class="dropdown-item" href="#">Location ID</a>
+        <a class="dropdown-item" href="#">Number of Favorites</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="#">Something else here</a> 
+      </div>-->
+    </div>
+    <form id="create" class="form-group" style="display:none;">
+      <br>
+      <label for = "event_summ">Event Name:</label><br>
+      <div class = "form-row">
+          <div class = "col-4">
+              <input class = "form-control" type = "text" id = "event_summ" name = "event_summ"><br>
+          </div>
+      </div>
+      <label for="event_loc">Event Location:</label><br>
+      <div class="form-row">
+          <div class="col-4">
+              <input class="form-control" type="text" id="event_loc" name="event_loc"><br>
+          </div>
+      </div>
+      <label for="event_org">Event Organizer:</label><br>
+      <div class="form-row">
+          <div class="col-4">
+              <input class="form-control" type="text" id="event_org" name="event_org"><br>
+          </div>
+      </div>
+      <label for="event_org">Event Date:</label><br>
+      <div class="form-row">
+          <div class="col-4">
+              <input class="form-control" type="text" id="event_date" name="event_org"><br>
+          </div>
+      </div>
+      <label for="event_desc">Event Description:</label><br>
+      <div class="form-row">
+          <div class="col-4">
+              <textarea class="form-control" rows="4" id="event_desc" name="event_desc"></textarea><br>
+          </div>
+      </div>
+      <button class="btn btn-primary" type="button" onclick = "add_evt()" id = "new">Add</button>
+    <br>
+    
+</form>
+  
+    <!--Start of the table-->
+    <br>
+    <div>
+      <table class="table table-sm" id="table">
+        <thead>
+          <tr>
+            <th class="p-3" scope="col" onclick="sortTable(0)">Events</th>
+            <th class="p-3" scope="col" onclick="sortTable(1)">Location</th>
+            <th class="p-3" scope="col" onclick="sortTable(2)">Organizer</th>
+            <th class="p-4" scope="col">Add to Favorites</th>
+            <th class="p-3" scope="col">Delete</th>
+          </tr>
+        </thead>
+        <tbody id="evts">
+
+        </tbody>
+      </table>
+      <h3 id="na" style="display:none;">No results found</h3>
+    </div>
+</div>
+
+
+<script>
+  function getEvent() {
+      $.ajax({
+          url: "/operation/getEvent",
+          type: "GET",
+
+          success: function(response) {
+
+              //var parsed_data = JSON.parse(response);
+              var parsed_data = response;
+              savedResponse = parsed_data.event;
+
+              if (!parsed_data.success) {
+                  return console.log(parsed_data.message);
+              } else {
+
+                  //console.log(parsed_data.event);
+
+                  //parsed_data = JSON.parse(response)
+                  console.log(fav);
+                  savedResponse.map((e, index) => {
+                      //id is a number
+                      //alert(typeof(e.event_id));
+                      var flag;
+                      
+                      if(fav.find(element => element == e.eventID))
+                        flag = 'Undo';
+                      else
+                        flag = 'Add'; 
+                      var $temp = $('<tr id="' + e.eventID + '">\
+                          <td scope="row" class="p-3">' + e.eventSummary + '</td>\
+                          <td class="p-3">' + e.eventLocation + '</td>\
+                          <td class="p-3 ">' + e.eventOrganizer + '</td>\
+                          <td class="p-3"><input type="button" value='+flag+' onclick="likeEvent('+e.eventID+');" class="likebtn" ></td>\
+                          <td class="p-3"><input class="del btn btn-danger" type="button" value="Delete" onclick="deleteEvent('+e.eventID+')" ></td>\
+                          ');
+                      
+                      $temp.find("td:first").on("click", function(){
+                          var $k = $(this).parent("tr").attr("id");
+                          result = savedResponse.filter(obj => {
+                                return String(obj.eventID) === $k;
+                          });
+                            changePage('event');
+                          //detect click for each event summary
+                          //alert($k);
+                      });
+                      $temp.find("button").attr("id", index);
+                      $temp.find("button").addClass("like");
+
+                      $("#evts").append($temp);
+                  });
+              }
+          },
+          error: function(error) {
+              console.log('the operation was not loaded', error);
+          },
+          complete: function(xhr, status) {
+              console.log("the request is completed");
+          }
+      });
+
+
+  }
+  getUserFavEvents();
+  getEvent();
+
+  function deleteEvent(event_id){
+    console.log('going to delete' + event_id);
+
+    $.ajax({
+      url: "/operation/deleteEvent?" + $.param({"eventID":event_id}),
+      type: "DELETE",
+      success: function(response){
+        console.log('success');
+      },
+      error: function(xhr,status){
+        console.log("the delete request is not completed.");
+      }
+    })
+
+  }
+
+  // function toggleLike(event_id){
+  //   console.log('well'+ event_id);
+  //   console.log(document.getElementById(event_id).value.innerHTML());
+  // }
+
+  $(document).on('click','.likebtn',function(){
+    // console.log($(this).attr('value'));
+    if ( $(this).attr('value') == 'Undo') {
+      $(this).val('Add');
+    }
+    else{
+      $(this).val('Undo');
+    }
+
+  });
+
+  function likeEvent(event_id){
+    console.log('like!!');
+
+    var user_id = sessionStorage.getItem("userID");
+    // console.log(user_id);
+    // console.log(event_id);
+    $.ajax({
+      url: "/operation/likeEvent?" + $.param({"eventID":event_id,"userID": user_id}),
+      type: "POST",
+      success: function(response){
+        console.log('success');
+        
+      },
+      error: function(xhr,status){
+        console.log("the delete request is not completed.");
+      },
+      complete: function(xhr, status) {
+            getUserFavEvents();
+            console.log("the request is completed");
+      }
+    })
+  }
+
+  function getUserFavEvents(){
+    console.log('Now get fav events!');
+    var user_id = sessionStorage.getItem("userID");
+    $.ajax({
+      url: "/operation/getUserFavEvents?"+ $.param({"userID": user_id}),
+      type: "GET",
+      success: function(response){
+        console.log('success');
+        console.log(response);
+        fav = response;
+      },
+      error: function(xhr,status){
+        console.log("the delete request is not completed.");
+      }
+    });
+  }
+
+//searching ref: w3c
+function menu() {
+    var input, check, table, tr, a, i, value;
+    var no;
+    input = document.getElementById("input");
+    check = input.value.toUpperCase();
+    table = document.getElementById("table");
+    tr = table.getElementsByTagName("tr");
+    var no = 0;
+    for (i = 1; i < tr.length; i++) {
+        a = tr[i].getElementsByTagName("td")[col];
+        value = a.textContent || a.innerText;
+        if (value.toUpperCase().indexOf(check) > -1) {
+            tr[i].style.display = "";
+            no++;
+        } else {
+            tr[i].style.display = "none";
+        }
+
+    }
+    var nth = document.getElementById("na");
+
+    if (no == 0) {
+        nth.style.display = "";
+    } else {
+        nth.style.display = "none";
+    }
+}
+
+function search(str) {
+    document.getElementById("show").value = str;
+    if (str == 'Event') {
+        //set search criteria to events col
+        col = 0;
+    }
+    if (str == "Location") {
+        //set search criteria to location col
+        col = 1;
+    }
+    if (str == "Organizer") {
+        //set search criteria to location col
+        col = 2;
+    }
+}
+
+
+//sorting table entries ref:w3c
+//bubble sort
+function sortTable(n) {
+    var tb, rows, switching, i, shouldSwitch, dir, switchcount = 0;
+    tb = document.getElementById("table");
+    switching = true;
+    //Set the sorting direction to ascending:
+    dir = "asc";
+    /*Make a loop that will continue until
+    no switching has been done:*/
+    while (switching) {
+        //start by saying: no switching is done:
+        switching = false;
+        rows = tb.rows;
+
+        for (i = 1; i < (rows.length - 1); i++) {
+            //start by saying there should be no switching:
+            shouldSwitch = false;
+
+            var x = rows[i].getElementsByTagName("TD")[n];
+            var y = rows[i + 1].getElementsByTagName("TD")[n];
+            
+            if (dir == "asc") {
+                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                    shouldSwitch = true;
+                    break;
+                }
+            } else if (dir == "desc") {
+                if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                    shouldSwitch = true;
+                    break;
+                }
+            }
+        }
+        if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+            //Each time a switch is done, increase this count by 1:
+            switchcount++;
+        } else {
+            if (switchcount == 0 && dir == "asc") {
+                dir = "desc";
+                switching = true;
+            }
+        }
+    }
+}
+
+//check if the add form has any empty fields
+//note: need to add new event to database
+function add_evt(){
+  var e_summ = document.getElementById("event_summ").value;
+  var e_loc = document.getElementById("event_loc").value;
+  var e_org = document.getElementById("event_org").value;
+  var e_desc = document.getElementById("event_desc").value;
+  var e_date = document.getElementById("event_date").value
+  if(e_summ == "" || e_loc == "" || e_org == "" || e_desc == "" || e_date == ""){
+    alert("You cannot leave any fields empty");
+  }
+  else{
+    //note: e_id need to get from server
+
+
+    var e_id = Date.now();
+    var $temp = $('<tr id="'+ e_id +'">\
+    <td scope="row" class="p-3">'+e_summ+'</td>\
+    <td class="p-3">'+e_loc+'</td>\
+    <td class="p-3 ">'+ e_org + '</td>\
+    <td class="p-3"><input type="button" value="Add" onclick="likeEvent('+e_id+');" class="likebtn" ></td>\
+    <td class="p-3"><input class="del btn btn-danger" type="button" value="Delete" onclick="deleteEvent('+e_id+')" ></td>\
+    ');
+
+    $.ajax({
+        url: "/operation/createEvent",
+        type: "POST",
+        dataType:"text",
+        data:{
+          event_id:e_id,
+          event_summary:e_summ,
+          event_date: e_date,
+          event_org: e_org,
+          event_location: e_loc
+        },
+        success: function(response) {
+            console.log('success!!!!');
+            console.log(response);
+        },
+        error: function(error) {
+            console.log('the event was not saved', error);
+        },
+        complete: function(xhr, status) {
+            console.log("the save is completed");
+        }
+    });
+
+    $temp.find("td:first").on("click", function(){
+        var $k = $(this).parent("tr").attr("id");
+        result = savedResponse.filter(obj => {
+              return String(obj.eventID) === $k;
+        });
+          changePage('event');
+        //detect click for each event summary
+        //alert($k);
+    });
+    
+
+    $temp.find("button").attr("id",new_index);
+    new_index++;
+    $temp.find("button").addClass("like");
+    $("#table").append($temp);
+  }
+}
+
+//toggle for showing/hiding the input event form
+function show_form(){
+  var status = document.getElementById("create").style.display;
+  if(status == "none"){
+    document.getElementById("create").style.display = "";
+  }
+  else{
+    document.getElementById("create").style.display = "none";
+  }
+}
+</script>

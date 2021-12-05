@@ -1,0 +1,70 @@
+<!--Register form-->
+
+
+<div class="p-4" id="main">
+    <form id="input">
+        <div class="form-group">
+            <label for="name">Username:</label><br>
+            <div class="form-row">
+                <div class="col-4">
+                    <input class="form-control" type="text" id="username" name="username"><br>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="subject">Password:</label><br>
+            <div class="form-row">
+                <div class="col-4">
+                    <input class="form-control" type="password" id="pw" name="password"><br>
+                </div>
+            </div>
+        </div>
+        <br>
+        <button type="button" onclick="verify()" id="new">Submit</button>
+    </form>
+</div>
+
+
+<script>
+    function verify() {
+        var username1 = document.getElementById("username").value;
+        var password1 = document.getElementById("pw").value;
+        if (username1 == '' || password1 == '')
+            alert("You cannot leave any of the fields empty");
+        else {
+
+            $.ajax({
+                url: "/operation/reg",
+                type: "POST",
+                dataType: "text",
+                data: {
+                    username: username1,
+                    password: password1
+                },
+
+                success: function(response) {
+
+
+                    var parsed_data = JSON.parse(response);
+                    if (!parsed_data.success) {
+                        return console.log(parsed_data.message);
+                    } else {
+                        alert('the user is created with id: ' + parsed_data.inserted.userID);
+                    }
+
+
+                    // push html file data into history
+                    // history.pushState(response,null,"/operation/login");
+                },
+                error: function(error) {
+                    console.log('the operation was not loaded', error);
+                },
+                complete: function(xhr, status) {
+                    console.log("the request is completed");
+                }
+            });
+
+
+        }
+    }
+</script>

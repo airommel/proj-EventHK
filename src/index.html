@@ -1,0 +1,223 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <!--   <script src="script.js"></script> -->
+
+
+</head>
+
+<body>
+
+    <!-- Navigation bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <a class="navbar-brand" href="javascript:void(0);" onclick="changePage('home')">Events</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+
+                <li class="nav-item active mx-3">
+                    <a class="nav-link" href="javascript:void(0);" onclick="changePage('home')"><i class="fa fa-home"> </i> Home<span class="sr-only">(current)</span></a>
+                </li>
+
+                <li class="nav-item mx-3">
+                    <a class="nav-link" href="javascript:void(0);" onclick="changePage('favourites')"><i class="fa fa-heart"> </i> Favourites</a>
+                </li>
+
+                <li class="nav-item mx-3">
+                    <a class="nav-link" href="javascript:void(0);" onclick="flush()">Flush</a>
+                </li>
+
+
+            </ul>
+            <!--note: added ids: log_user & log_btn-->
+            <p class="nav mx-3 text-light" id="log_user"></p>
+            <a class="nav-link" href="javascript:void(0);" onclick="changePage('login')" id="login_btn">Log in</a>
+            <a class="nav-link" href="javascript:void(0);" onclick="log_out()" id="logout_btn" style="display:none;">Log out</a>
+            <a class="nav-link" href="javascript:void(0);" onclick="changePage('createAC')">Create</a>
+        </div>
+    </nav>
+
+    <div id="shell">
+
+        <!--Login form-->
+        <div class="jumbotron">
+            <h3 class="display-4" id="summary">About This Project</h3>
+            <br>
+
+            <h3>Description</h3>
+
+            <p class="lead">
+                <div class="row">
+                    <div class="col-sm-9">
+                        <p>This web app is composed with Bootstrap as the frontend main framwork and Node.JS as the backend main framework, together with RESTFUL API and AJAX to send HTTP requests, Express and Body-Parser to handle post/get, Mongoose to
+                            manipulate MongoDB Database,Node-fetch to fetch event JSON and DOM to manupulate HTML contents.</p>
+                    </div>
+                </div>
+            </p>
+            <div>
+                <div class="row">
+                    <div class="col-sm-9">
+                        <span class="text-muted" id="frontend"><h5>Frontend</h5>
+                      </span>
+                        <div class="card">
+                            <div class="card-header">Login.html/js</div>
+                            <div class="card-body">User will land on this page. Inputted username and password will be post through RESTFUL API to the server and being verified though Mongoose API. Upon success, current window will be reloaded to Home.html content in SPA manner.</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">Home.html/.js</div>
+                            <div class="card-body">This is the main page of the web app. User can see a list of events that fetch from government website by JSON parser, RESTFUL API and Mongoose API (limited to 50 events). User are able to search events (by event title, organizer
+                                or location), sort function (by event title, organizer or location) and add events to favourite, by JS functions defined in Home.js by DOM methods.</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">Favourite.html/.js</div>
+                            <div class="card-body">This is a sub page of the web app. User can see a list of their archived favourite event with the event info listed. It basically looks alike Home, with sort and search functions exactly the same, but the events are explicitly
+                                filtered with only the favourite events of that user. User can drop specific event out of the list.</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">Navigation Button</div>
+                            <div class="card-body">This is a generic button exists all the time. User are able to navigate to Home or Favourite, as well as flush data or logout.</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">Flush.html/.js</div>
+                            <div class="card-body">This is a function for which the event data will be re-fetched and updates the exisiting event record in the MongoDB database by using JSON parser, RESTFUL API and Mongoose API (db update). Comments ID stored in each events
+                                will be retained if the events still exist after flushed by manipulating arrays.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br>
+
+            <div class="row">
+                <div class="col-sm-9">
+                    <span class="text-muted" id="backend"><h5>Backend</h5></span>
+                    <div class="card">
+                        <div class="card-header">Server.js</div>
+                        <div class="card-body">This file contains the declaration of required npm packages, Mongoose connection configuration, Mongo schema of user account, event and comment database, as well as a list of routers and RESTFUL API methods to manipulate the data
+                            with the frontend.
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">Script.js</div>
+                        <div class="card-body">This file defines the procedure of event do/undo favourite by DOM method.</div>
+                    </div>
+                </div>
+            </div>
+
+            <br>
+            <hr class="my-4">
+            <h3>Diagrams</h3>
+
+            <br>
+            <span class="text-muted" id="structure"><h5>Structure Diagram</h5></span>
+            <img src="/structure.png" alt="structure">
+
+            <br><br>
+            <span class="text-muted" id="schema"><h5>Schema Diagram</h5></span>
+            <img src="/schema.jpg" alt="schema">
+            </p>
+
+
+        </div>
+
+
+    </div>
+
+</body>
+
+<script>
+    var savedResponse;
+    var result;
+    var fav = [];
+    var name;
+    var col = 0;
+    var new_index = 10;
+    console.log(sessionStorage.getItem("userID"));
+
+    // for normal navigation of logged user
+    function changePage(page) {
+        var link;
+        if (sessionStorage.getItem("userID") == null) {
+
+            if (page == 'createAC') {
+                link = "/createAC";
+            } else if (page == 'login') {
+                link = "/login";
+            } else {
+                alert("You haven't logged in");
+                link = "/login";
+            }
+        } else {
+
+            if (page == 'home') {
+                link = "/home";
+            } else if (page == 'favourites') {
+                link = "/favourites";
+            } else if (page == 'login') {
+                link = "/login";
+            } else if (page == 'createAC') {
+                link = "/createAC";
+            } else if (page == "event") {
+                link = "/event";
+            }
+        }
+
+
+        $.ajax({
+            url: link,
+            type: "GET",
+            dataType: "text",
+
+            success: function(response) {
+                // push html file data into history
+                history.pushState(response, null, page);
+                console.log('the page is loaded')
+                $('#shell').html(response);
+            },
+            error: function(error) {
+                console.log('the page was not loaded', error);
+            },
+            complete: function(xhr, status) {
+                console.log("the request is completed");
+            }
+        });
+
+        return false;
+    }
+
+
+    function flush() {
+        $.ajax({
+            url: "/operation/flush",
+            type: "GET",
+            success: function(response) {
+                console.log('success!!!!');
+                console.log(response);
+            },
+            error: function(error) {
+                console.log('the flush was not loaded', error);
+            },
+            complete: function(xhr, status) {
+                console.log("the flush is completed");
+            }
+        });
+    }
+
+    // for history backward/forward
+    window.onpopstate = function(e) {
+        console.log("popped!");
+        var data = e.state;
+        $('#shell').html(data);
+    }
+</script>
+
+</html>

@@ -1,0 +1,163 @@
+
+<!--Display each favourite event-->
+
+<head>
+    <style>
+        button.active{
+          background-color: rgb(168, 168, 168);
+        }
+    </style>
+</head>
+<div class="container">
+    <div class="forms-inline">
+      <br>
+      <button class="btn mx-2" onclick="grid()" id="grid_btn"><i class="fa fa-th-large"></i> Grid</button>
+      <button class="btn active mx-2" onclick="list()" id="list_btn"><i class="fa fa-bars"></i> List</button>
+    </div>
+    <br>
+    <div class="" id="element" >
+      <!--All the dynamic contents-->
+    </div>
+
+    <!--
+<div class="card p-3">
+    <h1 class="p-3"> 
+        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-calendar" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1zm1-3a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2z"/>
+            <path fill-rule="evenodd" d="M3.5 0a.5.5 0 0 1 .5.5V1a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 .5-.5zm9 0a.5.5 0 0 1 .5.5V1a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 .5-.5z"/>
+        </svg>
+    </h1>
+    <div class="media-body p-3">
+        <h5 class="card-title">Event Name</h5>
+        <p class="card-text"></p><br>
+        <a href="#" class="btn btn-primary">Details</a>
+    </div>
+</div>
+
+
+<div style="padding:10px;">
+  <div class="media p-3" style="border:1px gray solid;">
+      <h1>
+      <svg width="1em" height="2em" viewBox="0 0 16 16" class="bi bi-calendar" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1zm1-3a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2z"/>
+          <path fill-rule="evenodd" d="M3.5 0a.5.5 0 0 1 .5.5V1a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 .5-.5zm9 0a.5.5 0 0 1 .5.5V1a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 .5-.5z"/>
+      </svg>
+      </h1>
+      <div class="media-body p-3">
+        <h5>Event Name</h5>
+        <p>Event Summary</p><br>
+        <a href="#" class="btn btn-primary">Details</a>
+      </div>
+  </div>
+</div>-->
+<script>
+ /*global variables
+  data: store event objects from database 
+  col: store which column is the user searching (default is event name)
+  fav: array to store the list of favourite events of users
+  name: store the name of current user (need to get from database)
+  new_index: store the index of the next created event(index is theid of button)
+*/
+
+var set = document.getElementsByClassName("evt");
+
+$(document).ready(function(){
+            //$("#main").html(txt);
+            //create each table row (will duplicate if uncommented above)
+            var $temp;
+            var flag = -1;
+            if(fav.length % 2 != 0){
+                flag = fav.length - 1;
+            }
+            for(var i = 0; i < fav.length;i++){
+                var id = fav[i];
+                //find obj from data with event_id
+                //result is an array
+                result = savedResponse.filter(obj => {
+                    return Number(obj.eventID) === id;
+                  });
+                  //console.log(result[0]);
+                $temp = $(
+                    '<div>\
+                    <div class="card evt " style="padding:10px;float:left;width:100%;">\
+                    <h3 class="p-3 media"> \
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-calendar" fill="currentColor" xmlns="http://www.w3.org/2000/svg">\
+                            <path fill-rule="evenodd" d="M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1zm1-3a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2z"/>\
+                            <path fill-rule="evenodd" d="M3.5 0a.5.5 0 0 1 .5.5V1a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 .5-.5zm9 0a.5.5 0 0 1 .5.5V1a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 .5-.5z"/>\
+                        </svg>\
+                    </h3>\
+                    <h3 class="card-title p-3">'+result[0].eventSummary+'</h3>\
+                    <div class="media-body p-3">\
+                        <h5 class="card-title"></h5>\
+                        <p class="card-text">Location: '+result[0].eventLocation+'</p><br>\
+                        <a class="btn btn-primary detail" style="color:white;" id="'+result[0].eventID+'">Details</a>\
+                    </div>\
+                </div>\
+                ');
+
+                if(i == flag){
+
+                    $temp.addClass("row"); 
+                    $(document).find("#element").append($temp);
+                    break;
+                }
+                i++;
+                var id = fav[i];
+                result = savedResponse.filter(obj => {
+                    return Number(obj.eventID) === id;
+                });
+                  console.log(result[0]);
+                $next = $(
+                    '<div class="card evt" style="float:left;padding:10px;width:100%;">\
+                    <h3 class="p-3 media"> \
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-calendar" fill="currentColor" xmlns="http://www.w3.org/2000/svg">\
+                            <path fill-rule="evenodd" d="M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1zm1-3a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2z"/>\
+                            <path fill-rule="evenodd" d="M3.5 0a.5.5 0 0 1 .5.5V1a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 .5-.5zm9 0a.5.5 0 0 1 .5.5V1a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 .5-.5z"/>\
+                        </svg>\
+                    </h3>\
+                    <h3 class="card-title p-3">'+result[0].eventSummary+'</h3>\
+                    <div class="media-body p-3">\
+                        <h5 class="card-title"></h5>\
+                        <p class="card-text">Location: '+result[0].eventLocation+'</p><br>\
+                        <a class="btn btn-primary detail" style="color:white;" id="'+result[0].eventID+'">Details</a>\
+                    </div>\
+                </div>\
+                </div>\
+                ');
+                
+                $temp.append($next);
+                $temp.addClass("row");
+                $(document).find("#element").append($temp);
+            }
+            $(document).find("a.detail").on("click", function(){
+                    var $k = $(this).attr("id");
+                    console.log(typeof($k));
+                    result = savedResponse.filter(obj => {
+                    return String(obj.eventID) === $k;
+                    });
+                    changePage('event');
+                });
+});
+
+//change display to grid layout
+function grid(){
+    $(document).find("#grid_btn").addClass("active");
+    $(document).find("#list_btn").removeClass("active");
+    for(var i = 0; i < set.length; i++){
+        set[i].style.width="50%";
+        //set[i].style.height="50%";
+    }
+}
+
+//change display to list layout
+function list(){
+    $(document).find("#list_btn").addClass("active");
+    $(document).find("#grid_btn").removeClass("active");
+    for(var i = 0; i < set.length; i++){
+        set[i].style.width="100%";
+        //set[i].style.height="70rem";
+    }
+}
+
+
+</script>

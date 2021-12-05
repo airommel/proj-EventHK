@@ -1,0 +1,271 @@
+<div class="jumbotron">
+    <h3 class="display-4" id="summary">Event Summary</h3>
+    <h4><span class="badge badge-pill badge-info" id="e_id"> Event ID</span></h4>
+    <br>
+
+    <h3>
+        <svg width="1em" height="0.8em" viewBox="0 0 16 16" class="bi bi-calendar" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1zm1-3a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2z"/>
+            <path fill-rule="evenodd" d="M3.5 0a.5.5 0 0 1 .5.5V1a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 .5-.5zm9 0a.5.5 0 0 1 .5.5V1a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 .5-.5z"/>
+        </svg>
+        <span class="text-muted" id="date">Date</span>
+    </h3>
+    <br>
+    <!--
+    <div class="lead">
+        <h5 class="badge badge-secondary">Description</h5>
+        <p class="lead" id="desc">Event Description</p>
+    </div>
+-->
+    <div class="lead">
+      <h5 class="badge badge-secondary">Location</h5>
+      <p class="lead" id="e_loc">Location</p>
+    </div>
+
+    <div class="lead">
+      <h5 class="badge badge-secondary">Organizer</h5>
+      <p class="lead" id="e_org">Organizer</p>
+    </div>
+
+    <h5>
+        <object height="20em" data="link.svg" type="image/svg+xml"></object>
+        <a id="ics">ICS of Event</a>
+    </h5>
+    
+    <div class="form-inline">
+      <button class="like"></button>
+      <button class="btn btn-primary mx-2"  onclick="show_update()">Update</button>
+    </div>
+    <br>
+    <form style="display:none;" id="update_form">
+      <div class="dropdown form-inline">
+        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Update Criteria<span class="caret"></span></button>
+        <ul class="dropdown-menu">
+          <li id="event" onclick="update('Name')"><a>Name</a></li>
+          <li id="loc" onclick="update('Location')"><a>Location</a></li>
+          <li id="date" onclick="update('Date')"><a>Date</a></li>
+          <li id="org" onclick="update('Organizer')"><a>Organizer</a></li>
+          <!--<li><a href="#">Number of Favourites</a></li>-->
+        </ul>
+        <input class="form-control mr-sm-2 col-4" type="text" id="update" value="Name" disabled>  
+      </div>
+      <br>
+      New Content: <textarea class = "form-control col-5" id = "up_cnt" rows = "4" cols = "30" name = "new"></textarea><br>
+      <button class="btn btn-primary btn-sm" type="button" onclick="change_content()">Update</button>
+    </form>
+    <hr class="my-4">
+
+    <h3>Comments</h3>
+    
+    <p class="lead">
+        <ul id="list">
+            <!--
+            <li class="media">
+                <svg height="100" width="100">
+                  <circle cx="50" cy="50" r="40" fill="blue">
+                </circle></svg>
+                <div class="media-body">
+                  <h5>Name</h5>
+                  <p>All comments will be displayed here</p><br>
+                </div>
+            </li>-->
+        </ul>
+        <hr>
+        <h4>Add Comment</h4>
+        <div class="media">
+            <svg height="100" width="100">
+              <circle id="icon" cx="50" cy="50" r="40" fill="green">
+            </circle></svg>
+            <div class="media-body">
+                <h5 id="user_name">Name</h5>
+                <div class = "form-group">
+                    <label for = "comment" >Comment:</label><br>
+                    <div class = "col-5 form-row">
+                        <textarea class = "form-control" id = "comment" rows = "3" cols = "30" name = "comment"></textarea><br>
+                        <button  onclick="processForm()"class="btn btn-primary btn-sm" href="#" role="button" id="post">Post</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </p>
+  </div>
+    <script>
+loadComment();
+var col = 0;
+
+        $(document).ready(function(){
+            $(document).find("#summary").html(result[0].eventSummary);
+            $(document).find("#e_id").html("#"+result[0].eventID);
+            $(document).find("#date").html(result[0].eventDate);
+            $(document).find("#ics").attr("href", result[0].eventICS);
+            $(document).find("div.jumbotron").attr("id", result[0].eventID);
+            $(document).find("#e_loc").html(result[0].eventLocation);
+            $(document).find("#e_org").html(result[0].eventOrganizer);
+            $(document).find("#user_name").html(name);
+        //$(document).find("#desc").html(data[0].event_desc);
+        });
+
+        if(fav.indexOf(Number(result[0].event_id)) == -1){
+            $(document).find("button.like").html("Add to Favourites");
+        }
+        else{
+            $(document).find("button.like").html("Undo Favourites");
+        }
+
+        $(document).on("click","button.like", function(){
+        var id = $(this).parents("div.jumbotron").attr("id");
+        //id is a string
+        var index = fav.indexOf(Number(id));
+        //alert(index);
+        //if the event is one of favourites
+        if(index > -1){
+          //remove from the fav array and change the text on the button
+          fav.splice(index, 1);
+          $(this).html("Add to Favourites");
+        }
+        else{
+          fav.push(Number(id));  
+          $(this).html("Undo Favourites");
+        }
+        console.log(fav);
+    });
+
+    
+//change text in the diaplay textbox
+function update(str){
+    document.getElementById("update").value = str;
+}
+
+//change the content according to input
+//note need to change database
+function change_content(){
+    var cnt = document.getElementById("up_cnt").value;
+    var keywd = document.getElementById("update").value;
+    var head;
+    if(keywd == "Name"){
+        document.getElementById("summary").innerHTML = cnt;
+        head = "eventSummary";
+    }
+    if(keywd == "Location"){
+        document.getElementById("e_loc").innerHTML = cnt;
+        head = "eventLocation";
+    }
+    if(keywd == "Date"){
+        document.getElementById("date").innerHTML = cnt;
+        head = "eventDate";
+    }
+    if(keywd == "Organizer"){
+        document.getElementById("e_org").innerHTML = cnt;
+        head = "eventOrganizer";
+    }
+    document.getElementById("up_cnt").value = '';
+
+
+    $.ajax({
+      url: "/operation/updateEvent?" + $.param({"eventID": result[0].eventID,"field":head,"value":cnt}),
+      type: "PUT",
+      success: function(response){
+        console.log('success');
+      },
+      error: function(xhr,status){
+        console.log("the delete request is not completed.");
+      }
+    })
+}
+
+//toggle for the form for update(visible/ not visible)
+function show_update(){
+    var status = document.getElementById("update_form").style.display;
+    if(status == "none"){
+      document.getElementById("update_form").style.display = "";
+    }
+    else{
+      document.getElementById("update_form").style.display = "none";
+    }
+}
+
+// frontend add comment successful
+
+function processForm(){
+  console.log('hi');
+
+  var date = new Date();
+  var nameValue = name;
+  var newComment = document.getElementById('comment').value;
+  var colorValue = intToRGB();
+  
+  let $new = $("<li id='" + date.valueOf()+ "' class='media'><svg><circle></circle></svg> <div class='media-body'><h5></h5><p></p></div></li> ");
+
+  $new.find("h5").html(name);
+  $new.find("p").html($("#comment").val());
+
+  $new.find("svg").attr({
+    "height":100,
+    "width":100
+  });
+
+  $new.find("circle").attr({
+    "cx":50,
+    "cy":50,
+    "r":40,
+    "fill": colorValue
+  });
+
+  $new.appendTo('#list');
+
+  $("#comment").val('');
+  saveComment();
+}
+
+
+function intToRGB() {
+  //credit to https://stackoverflow.com/a/2262117/2737978 for the idea of how to implement
+  var value = sessionStorage.getItem("userID");
+  var blue = Math.floor(value % 256);
+  var green = Math.floor(value / 256 % 256);
+  var red = Math.floor(value / 256 / 256 % 256);
+
+  var result = "rgb(" + red + "," + green + "," + blue + ")";
+
+  $("#icon").css({"fill":result});
+
+  return result;
+}
+
+intToRGB();
+
+
+function saveComment(){
+  var data = $("#list").html();
+
+  $.ajax({
+    url: '/operation/postComment',
+    type: 'POST',
+    dataType:'text',
+    data: {
+      comments: data,
+      eventID: result[0].eventID
+    }
+
+  });
+}
+
+// load comment done
+function loadComment(){
+
+  $.ajax({
+    url: '/operation/loadComment?' + $.param({"eventID": result[0].eventID}),
+    type: 'GET',
+    success: function(response){
+      console.log('success');
+      console.log(response);
+      $('#list').append(response);
+    },
+    error: function(xhr,status){
+      console.log("the delete request is not completed.");
+    }
+
+  });
+}
+
+    </script>
